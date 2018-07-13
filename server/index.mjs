@@ -39,6 +39,4 @@ app.server.listen(port, () => {
   console.info(`Web server listening on port ${app.server.address().port}...`);
 });
 
-app.get('*.m?js', express.static('.'));
-app.use('/test', express.static('test'));
 app.use('/', express.static('dist'));
