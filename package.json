@@ -8,7 +8,7 @@
     "start": "npm-run-all --parallel server watch",
     "server": "node --experimental-modules server/index.mjs",
     "watch": "watch 'npm run build' ./client",
-    "test": "mocha -R nyan --recursive --require babel-core/register $(. -name '*.spec.js')",
+    "test": "mocha -R nyan --recursive --require babel-core/register $(find . -name '*.spec.js')",
     "lint": "eslint --cache client server"
   },
   "keywords": [],
