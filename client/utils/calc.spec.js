@@ -1,7 +1,5 @@
 /* eslint-env mocha */
-const chai = chai ? chai : require('chai');
-const { expect } = chai;
-
+import { expect } from 'chai';
 import {
   segmentsIntersect,
   segmentIntersectsPolyline,

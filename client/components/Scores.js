@@ -4,11 +4,13 @@ import PropTypes from 'prop-types';
 
 export const Scores = ({ players = [] }) => (
   <div className="scoreboard">
-    <h3>Score Board</h3>
+    <h3>Players</h3>
     { players.map(player => (
       <div className="score-player" key={`score-${player.name}`}>
-        <div className="score-player__color" style={{ backgroundColor: player.color }} />
-        <div className="score-player__name">{player.name}</div>
+        <div className="score-player__name">
+          <div className="score-player__color" style={{ backgroundColor: player.color }} />
+          {player.name}
+        </div>
         <div className="score-player__score">{player.score}</div>
       </div>
     ))}

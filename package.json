@@ -4,13 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npm-run-all test:find --parallel server build:watch browser",
-    "server": "node --experimental-modules index.mjs",
     "build": "webpack",
-    "build:watch": "watch \"npm run build\" ./client",
-    "browser": "open http:/localhost:8080/ && open http:/localhost:8080/test/",
-    "test:find": "find actions client reducers server utils -name '*.spec.js' | sed -En \"s/(.*)/import '..\\/\\1';/p\" > test/all-tests.js",
-    "test": "node_modules/.bin/mocha -R nyan --recursive --require babel-core/register $(find actions client reducers server utils -name '*.spec.js')"
+    "start": "npm-run-all --parallel server watch",
+    "server": "node --experimental-modules server/index.mjs",
+    "watch": "watch 'npm run build' ./client",
+    "test": "mocha -R nyan --recursive --require babel-core/register $(. -name '*.spec.js')",
+    "lint": "eslint --cache client server"
   },
   "keywords": [],
   "author": "",
@@ -18,6 +17,7 @@
   "dependencies": {
     "chai": "^4.1.2",
     "chai-enzyme": "^1.0.0-beta.1",
+    "deep-freeze": "0.0.1",
     "enzyme": "^3.3.0",
     "enzyme-adapter-react-16": "^1.1.1",
     "eslint-plugin-mocha": "^5.1.0",
@@ -39,7 +39,6 @@
     "babel-register": "^6.26.0",
     "babel-runtime": "^6.26.0",
     "css-loader": "^1.0.0",
-    "deep-freeze": "0.0.1",
     "eslint": "^4.19.1",
     "eslint-config-airbnb": "^17.0.0",
     "eslint-plugin-import": "^2.13.0",

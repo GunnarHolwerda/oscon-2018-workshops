@@ -1,3 +1,4 @@
+/* eslint-env browser */
 import './index.css';
 import './components/App.css';
 import './components/Board.css';
@@ -11,9 +12,9 @@ import { Provider } from 'react-redux';
 import { createStore, applyMiddleware, compose } from 'redux';
 
 import App from './components/App';
-import reducer from '../reducers/index.mjs';
-import actions from '../actions/index.mjs';
-import { keyCodes, playerStates, actions as actionTypes } from '../utils/constants.mjs';
+import reducer from './reducers/index.mjs';
+import actions from './actions/index.mjs';
+import { keyCodes, playerStates, actions as actionTypes } from './utils/constants.mjs';
 import currentPlayerDirection from './subscribers/currentPlayerDirection';
 import currentPlayerStatus from './subscribers/currentPlayerStatus';
 import configureSocket from './utils/configureSocket';
@@ -22,15 +23,8 @@ import socketActionMiddleware from './utils/socketActionReporter';
 const { hostname } = window.location;
 const socket = new WebSocket(`ws://${hostname}:8081`);
 
-const {
-  player: {
-    up, down, left, right,
-  },
-} = actions;
-
-const {
-  UP, DOWN, LEFT, RIGHT,
-} = keyCodes;
+const { player: { up, down, left, right } } = actions;
+const { UP, DOWN, LEFT, RIGHT } = keyCodes;
 
 // eslint-disable-next-line no-underscore-dangle
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;

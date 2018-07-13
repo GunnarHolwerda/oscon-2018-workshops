@@ -1,8 +1,9 @@
-/* eslint-env mocha */
-const chai = chai ? chai : require('chai');
-const { expect, assert } = chai;
+/* eslint-env node, mocha */
+// import sessions from './sessions.mjs';
 
-import sessions from './sessions.mjs';
+const chai = require('chai');
+
+const { assert } = chai;
 
 describe('sessions', () => {
   describe('new()', () => {

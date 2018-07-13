@@ -1,14 +1,14 @@
 /* eslint-env: node */
-/* eslint no-console: 0 */
-import path from 'path';
+import express from 'express';
+import http from 'http';
 import WebSocket from 'ws';
-import { newConnection, broadcast } from './server/sessions.mjs';
-import reducer from './reducers/index.mjs';
-import createStore from './server/liteStore.mjs';
-import actions from './actions/index.mjs';
+
+import createStore from './liteStore.mjs';
+import { newConnection, broadcast } from './sessions.mjs';
+import reducer from '../client/reducers/index.mjs';
+import actions from '../client/actions/index.mjs';
 
 // Socket server //////////////
-
 const socketPort = process.env.SOCKET_PORT || 8081;
 const store = createStore(reducer);
 store.dispatch(actions.board.load([
@@ -26,21 +26,17 @@ setInterval(() => {
 }, 10);
 
 const server = new WebSocket.Server({ port: socketPort });
-console.log(`Socket server listening on port ${socketPort}...`);
+console.info(`Socket server listening on port ${socketPort}...`);
 server.on('connection', newConnection(store));
 
 
 // File server //////////////
-
-import express from 'express';
-import http from 'http';
-
 const app = express();
 app.server = http.createServer(app);
 
 const port = process.env.PORT || 8080;
 app.server.listen(port, () => {
-  console.log(`Web server listening on port ${app.server.address().port}...`);
+  console.info(`Web server listening on port ${app.server.address().port}...`);
 });
 
 app.get('*.m?js', express.static('.'));

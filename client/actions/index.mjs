@@ -1,16 +1,11 @@
 import { actions, directions } from '../utils/constants.mjs';
 import { isClosed } from '../utils/calc.mjs';
 
-const {
-  BOARD_SET, PLAYER_ADD, PLAYER_DIRECTION, PLAYER_CURRENT, TIME,
-} = actions;
-
-const {
-  UP, DOWN, LEFT, RIGHT,
-} = directions;
+const { BOARD_SET, PLAYER_ADD, PLAYER_DIRECTION, PLAYER_CURRENT, TIME } = actions;
+const { UP, DOWN, LEFT, RIGHT } = directions;
 
 const board = {
-  load: data => {
+  load: (data) => {
     if (!Array.isArray(data)) throw Error(`board received must be an array. Received${typeof data}`);
     if (!data.every(Array.isArray)) throw Error('board received must be an array of arrays.');
     if (!data.every(p => p.every(Array.isArray))) throw Error('board received must be an array of arrays of arrays');
@@ -32,18 +27,18 @@ const player = {
     const y = Number(inputY);
     if (Number.isNaN(x)) throw new Error(`x should be a number. Received ${inputX}`);
     if (Number.isNaN(y)) throw new Error(`y should be a number. Received ${inputY}`);
-    return { type: PLAYER_ADD, data: { name, x, y } };
+    return { type: PLAYER_ADD, data: { x, y }, player: name };
   },
 
   claim: data => ({ type: PLAYER_CURRENT, data }),
 
-  up: name => ({ type: PLAYER_DIRECTION, data: { name, direction: UP } }),
-  down: name => ({ type: PLAYER_DIRECTION, data: { name, direction: DOWN } }),
-  left: name => ({ type: PLAYER_DIRECTION, data: { name, direction: LEFT } }),
-  right: name => ({ type: PLAYER_DIRECTION, data: { name, direction: RIGHT } }),
+  up: name => ({ type: PLAYER_DIRECTION, data: UP, player: name }),
+  down: name => ({ type: PLAYER_DIRECTION, data: DOWN, player: name }),
+  left: name => ({ type: PLAYER_DIRECTION, data: LEFT, player: name }),
+  right: name => ({ type: PLAYER_DIRECTION, data: RIGHT, player: name }),
 };
 
-const time = amount => {
+const time = (amount) => {
   const data = Number(amount);
   if (!Number.isFinite(data)) throw Error(`amount should be a number. Received ${amount}`);
   if (!data) throw Error(`amount must exist and be non-zero. Received ${amount}`);

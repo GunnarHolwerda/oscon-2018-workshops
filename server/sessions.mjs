@@ -1,22 +1,19 @@
 /* eslint-env: node */
-import commands from '../utils/socketCommands.mjs';
-import { actions } from '../utils/constants.mjs';
+import { actions, socketCommands as commands } from '../client/utils/constants.mjs';
 
-const {
-  STATE_SET, PLAYER_ADD, PLAYER_ADD_ERR, PLAYER_CURRENT, PLAYER_DISCONNECT,
-} = actions;
+const { STATE_SET, PLAYER_ADD, PLAYER_ADD_ERR, PLAYER_CURRENT, PLAYER_DELETE } = actions;
 
 const sessions = {};
 
-export const sendAction = socket => action => {
+export const sendAction = socket => (action) => {
   socket.send(JSON.stringify({
     type: commands.ACTION,
     data: action,
   }));
 };
 
-export const broadcast = action => {
-  Object.keys(sessions).forEach(id => {
+export const broadcast = (action) => {
+  Object.keys(sessions).forEach((id) => {
     const socket = sessions[id];
     try {
       sendAction(socket)(action);
@@ -28,11 +25,11 @@ export const broadcast = action => {
 
 export const nameAvailable = name => Object.keys(sessions).every(id => sessions[id].name !== name);
 
-export const newConnection = store => socket => {
+export const newConnection = store => (socket) => {
   const id = Date.now();
   sessions[id] = socket;
   const send = sendAction(socket);
-  socket.on('message', message => {
+  socket.on('message', (message) => {
     const { type, data: action } = JSON.parse(message);
 
     // Wait right there... Before we reduce this, we need to
@@ -65,7 +62,7 @@ export const newConnection = store => socket => {
   socket.on('close', () => {
     delete sessions[id];
     broadcast({
-      type: PLAYER_DISCONNECT,
+      type: PLAYER_DELETE,
       data: id,
     });
   });
@@ -76,6 +73,7 @@ export const newConnection = store => socket => {
     data: {
       type: STATE_SET,
       data: store.getState(),
+      timestamp: Date.now(),
     },
   }));
 };

@@ -1,9 +1,9 @@
 /* eslint-env mocha */
-import { expect, shallow, React } from '../../utils/testComponent';
+import { expect, shallow, React } from '../utils/testComponent';
 
 import { Board, select } from './Board';
-import reducer from '../../reducers/index.mjs';
-import actions from '../../actions/index.mjs';
+import reducer from '../reducers/index.mjs';
+import actions from '../actions/index.mjs';
 
 describe('Board', () => {
   const board = [

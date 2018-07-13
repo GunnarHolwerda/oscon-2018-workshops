@@ -7,7 +7,7 @@
  */
 const rotationDirection = ([x1, y1], [x2, y2], [x3, y3]) => {
   if (((y3 - y1) * (x2 - x1)) > ((y2 - y1) * (x3 - x1))) return 1;
-  else if (((y3 - y1) * (x2 - x1)) === ((y2 - y1) * (x3 - x1))) return 0;
+  if (((y3 - y1) * (x2 - x1)) === ((y2 - y1) * (x3 - x1))) return 0;
   return -1;
 };
 
@@ -20,10 +20,10 @@ const rotationDirection = ([x1, y1], [x2, y2], [x3, y3]) => {
  */
 const containsSegment = ([x1, y1], [x2, y2], [sx, sy]) => {
   if (x1 < x2 && x1 < sx && sx < x2) return true;
-  else if (x2 < x1 && x2 < sx && sx < x1) return true;
-  else if (y1 < y2 && y1 < sy && sy < y2) return true;
-  else if (y2 < y1 && y2 < sy && sy < y1) return true;
-  else if ((x1 === sx && y1 === sy) || (x2 === sx && y2 === sy)) return true;
+  if (x2 < x1 && x2 < sx && sx < x1) return true;
+  if (y1 < y2 && y1 < sy && sy < y2) return true;
+  if (y2 < y1 && y2 < sy && sy < y1) return true;
+  if ((x1 === sx && y1 === sy) || (x2 === sx && y2 === sy)) return true;
   return false;
 };
 
@@ -108,7 +108,7 @@ export const pointIsInPolygon = ([x, y], poly) => {
  * @param  {array[array[number]]}  poly array of 2d points
  * @return {Boolean}                    true if the first point of the polyline is the same as the last
  */
-export const isClosed = poly => {
+export const isClosed = (poly) => {
   const [x1, y1] = poly[0];
   const [xn, yn] = poly[poly.length - 1];
   return (x1 === xn && y1 === yn);

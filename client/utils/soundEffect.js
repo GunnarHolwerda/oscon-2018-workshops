@@ -1,3 +1,4 @@
+/* eslint-env browser */
 export default (src, initialCount = 5) => {
   const ready = new Set();
   const newInstance = () => {

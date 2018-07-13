@@ -1,8 +1,6 @@
 /* eslint-env mocha */
-const chai = chai ? chai : require('chai');
-const { expect, assert } = chai;
-
-import pacemaker from './pacemaker.js';
+import { expect, assert } from 'chai';
+import pacemaker from './pacemaker';
 
 const noop = () => {};
 
@@ -23,7 +21,7 @@ describe('Pacemaker', () => {
     subs = pacemaker.getSubs();
     expect(subs).to.deep.equal([]);
   });
-  it.skip('should call subscribers with a timestamp', (done) => {
+  it('should call subscribers with a timestamp', (done) => {
     const func = (time) => {
       assert(time);
       done();
@@ -34,4 +32,3 @@ describe('Pacemaker', () => {
     assert(true);
   });
 });
-

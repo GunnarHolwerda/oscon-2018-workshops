@@ -1,71 +1,39 @@
-import { actions, directions, playerStates } from '../utils/constants.mjs';
-import { segmentIntersectsPolyline, segmentsIntersect } from '../utils/calc.mjs';
+import { actions } from '../utils/constants.mjs';
+import playerReducer from './player.mjs';
 
 export const SECOND = 1000;
 export const START_COUNTDOWN = 3 * SECOND;
 export const CRASH_LINGER = 2 * SECOND;
-const { STATE_SET, BOARD_SET, PLAYER_ADD, PLAYER_CURRENT, PLAYER_DIRECTION, TIME } = actions;
-const { STARTING, PLAYING, CRASHED } = playerStates;
+const { STATE_SET, BOARD_SET, PLAYER_CURRENT } = actions;
 
 export const initialState = {
   time: 0,
   players: {},
   obstacles: [],
-  colors: {
-    orange: 0,
-    cyan: 0,
-    green: 0,
-    yellow: 0,
-  },
   minX: 0,
   maxX: 10,
   minY: 0,
   maxY: 10,
 };
 
-export const leastUsedColor = colors => Object.keys(colors).reduce(
-  (least, current) => (colors[least] < colors[current] ? least : current),
-  'ugly',
-);
-
-const initializePlayer = (x, y, currentTime) => ({
-  x,
-  y,
-  startTime: currentTime + START_COUNTDOWN,
-  status: STARTING,
-  speed: 50 / SECOND,
-  direction: directions.UP,
-  lastDirection: null,
-  path: [],
-});
-
-// Filters out directions that are the same or opposite
-const getNextDirection = (next, prev) => {
-  if (next === prev) return null;
-  if (prev && next[0] === -prev[0] && next[1] === -prev[1]) return null;
-  return next;
-};
-
 export default (state = initialState, action) => {
   if (!action) return state;
-  const updatePlayer = (name, patch, color) => {
+  const { type, data } = action;
+
+  const updatePlayer = () => {
+    const { player: name } = action;
     const { players } = state;
-    const player = { ...players[name], ...patch };
-    let { colors } = state;
-    if (color) {
-      player.color = color;
-      colors = { ...colors, [color]: colors[color] + 1 };
-    }
-    return { ...state, colors, players: { ...players, [name]: player } };
+    const player = players[name];
+    return { ...state, players: { ...players, [name]: playerReducer(player, action, state) } };
   };
 
-  switch (action.type) {
+  switch (type) {
     case STATE_SET: {
       return action.data;
     }
 
     case BOARD_SET: {
-      const obstacles = action.data;
+      const obstacles = data;
       const [perimeter] = obstacles;
       const Xs = perimeter.map(point => point[0]);
       const Ys = perimeter.map(point => point[1]);
@@ -78,26 +46,18 @@ export default (state = initialState, action) => {
       };
     }
 
-    case PLAYER_ADD: {
-      const { x, y, name } = action.data;
-      // Ignore adding players with a name that already exists on the board
-      const current = state.players[name];
-      if (current && current.status !== CRASHED) return state;
-      return updatePlayer(name, initializePlayer(x, y, state.time), leastUsedColor(state.colors));
-    }
-
     case PLAYER_CURRENT: {
-      return { ...state, currentPlayer: action.data };
+      return { ...state, currentPlayer: data };
     }
 
-    case PLAYER_DIRECTION: {
-      const { direction: nextDirection, name } = action.data;
-      const { direction, lastDirection, status } = state.players[name];
-      if (status === CRASHED) return state;
-      const plannedDirection = getNextDirection(nextDirection, lastDirection);
-      if (!plannedDirection || plannedDirection === direction) return state;
-      return updatePlayer(name, { direction: plannedDirection });
+    default: {
+      if (action.player) return updatePlayer();
+      return state;
     }
+  }
+};
+
+/*
 
     case TIME: {
       const increment = action.data;
@@ -188,3 +148,4 @@ export default (state = initialState, action) => {
       return state;
   }
 };
+*/

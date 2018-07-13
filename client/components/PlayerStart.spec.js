@@ -1,10 +1,10 @@
 /* eslint-env mocha */
-import { expect, shallow, React } from '../../utils/testComponent';
+import { expect, shallow, React } from '../utils/testComponent';
 
 import { PlayerStart, select, dispatchers, mergeProps } from './PlayerStart';
-import reducer from '../../reducers/index.mjs';
-import actions from '../../actions/index.mjs';
-import { actions as actionTypes } from '../../utils/constants.mjs';
+import reducer from '../reducers/index.mjs';
+import actions from '../actions/index.mjs';
+import { actions as actionTypes } from '../utils/constants.mjs';
 
 const { PLAYER_ADD } = actionTypes;
 const perimeter = [[0, 0], [100, 0], [100, 100], [0, 100], [0, 0]];

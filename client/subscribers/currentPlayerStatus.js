@@ -1,6 +1,6 @@
 import subscribeTo from './subscribeTo';
 import soundEffect from '../utils/soundEffect';
-import { playerStates } from '../../utils/constants.mjs';
+import { playerStates } from '../utils/constants.mjs';
 
 const crash = soundEffect('crash1.wav', 1);
 const starting = soundEffect('countdown1.wav', 1);

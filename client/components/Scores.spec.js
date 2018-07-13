@@ -1,5 +1,5 @@
 /* eslint-env mocha */
-import { expect, shallow, React } from '../../utils/testComponent';
+import { expect, shallow, React } from '../utils/testComponent';
 import { Scores, select } from './Scores';
 
 describe('Scores', () => {

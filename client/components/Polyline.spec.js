@@ -1,5 +1,5 @@
 /* eslint-env mocha */
-import { expect, shallow, React } from '../../utils/testComponent';
+import { expect, shallow, React } from '../utils/testComponent';
 import Polyline from './Polyline';
 
 describe('Polyline', () => {

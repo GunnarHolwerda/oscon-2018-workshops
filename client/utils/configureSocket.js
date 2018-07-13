@@ -1,5 +1,5 @@
-import commands from '../../utils/socketCommands.mjs';
-// import { dumpActionQueue } from './socketActionReporter';
+/* eslint-env browser */
+import { socketCommands as commands } from './constants.mjs';
 
 let actionQueue = [];
 
@@ -10,14 +10,12 @@ export default function configureSocket(socket, store) {
 
   socket.addEventListener('message', (event) => {
     const { type, data } = JSON.parse(event.data);
-    // console.log({ event: event.data, type, data });
+    data.incoming = true;
     if (type === commands.INIT) {
-      // console.log('actions available', actions);
-      store.dispatch({ ...data, incoming: true });
-      // console.log('Initialized:', data);
+      data.timeOffset = Date.now() - data.timestamp;
+      store.dispatch(data);
     } else if (type === commands.ACTION) {
-      // console.log('received action:', data);
-      actionQueue.push({ ...data, incoming: true });
+      actionQueue.push(data);
     }
   });
 

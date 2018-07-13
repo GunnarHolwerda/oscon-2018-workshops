@@ -1,7 +1,5 @@
 /* eslint-env mocha */
-const chai = chai ? chai : require('chai');
-const { expect } = chai;
-
+import { expect } from 'chai';
 import actions from './index.mjs';
 
 const { board, player, time } = actions;
@@ -49,12 +47,24 @@ describe('actions', () => {
   describe('player', () => {
     describe('add()', () => {
       it('works with simple numbers', () => {
-        expect(player.add('matt', 20, 15)).to.deep.equal({ type: 'PLAYER_ADD', data: { name: 'matt', x: 20, y: 15 } });
-        expect(player.add('matt', 0, 0)).to.deep.equal({ type: 'PLAYER_ADD', data: { name: 'matt', x: 0, y: 0 } });
+        expect(player.add('matt', 20, 15)).to.deep.equal({
+          type: 'PLAYER_ADD',
+          player: 'matt',
+          data: { x: 20, y: 15 },
+        });
+        expect(player.add('matt', 0, 0)).to.deep.equal({
+          type: 'PLAYER_ADD',
+          player: 'matt',
+          data: { x: 0, y: 0 },
+        });
       });
 
       it('converts non-numberics', () => {
-        expect(player.add('matt', '20', '15')).to.deep.equal({ type: 'PLAYER_ADD', data: { name: 'matt', x: 20, y: 15 } });
+        expect(player.add('matt', '20', '15')).to.deep.equal({
+          type: 'PLAYER_ADD',
+          player: 'matt',
+          data: { x: 20, y: 15 },
+        });
       });
 
       it('throws garbage', () => {
@@ -76,13 +86,13 @@ describe('actions', () => {
     });
 
     it('up()', () => {
-      expect(player.up('ian')).to.deep.equal({ type: 'PLAYER_DIRECTION', data: { name: 'ian', direction: [0, -1] } });
+      expect(player.up('ian')).to.deep.equal({ type: 'PLAYER_DIRECTION', player: 'ian', data: [0, -1] });
     });
     it('down()', () => {
-      expect(player.down('ian')).to.deep.equal({ type: 'PLAYER_DIRECTION', data: { name: 'ian', direction: [0, 1] } });
+      expect(player.down('ian')).to.deep.equal({ type: 'PLAYER_DIRECTION', player: 'ian', data: [0, 1] });
     });
     it('left()', () => {
-      expect(player.left('ian')).to.deep.equal({ type: 'PLAYER_DIRECTION', data: { name: 'ian', direction: [-1, 0] } });
+      expect(player.left('ian')).to.deep.equal({ type: 'PLAYER_DIRECTION', player: 'ian', data: [-1, 0] });
     });
     it('right()', () => {
       expect(player.right('ian')).to.deep.equal({ type: 'PLAYER_DIRECTION', data: { name: 'ian', direction: [1, 0] } });
