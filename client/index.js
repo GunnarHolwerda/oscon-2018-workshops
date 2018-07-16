@@ -17,7 +17,6 @@ import actions from './actions/index.mjs';
 import { keyCodes, playerStates, actions as actionTypes } from './utils/constants.mjs';
 import currentPlayerDirection from './subscribers/currentPlayerDirection';
 import currentPlayerStatus from './subscribers/currentPlayerStatus';
-// import configureSocket from './utils/configureSocket';
 import { socketActionReporter } from './utils/middlewares';
 
 const { hostname } = window.location;
