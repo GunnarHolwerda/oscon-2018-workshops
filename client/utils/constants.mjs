@@ -32,7 +32,7 @@ export const playerStates = {
 };
 
 export const socketCommands = {
-  INIT: 'INERT',
-  ACTION: 'ACTJION',
-  CLOSE: 'CLOTHES',
+  INIT: 'INIT',
+  ACTION: 'ACTION',
+  CLOSE: 'CLOSE',
 };

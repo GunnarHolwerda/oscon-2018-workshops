@@ -66,8 +66,8 @@ socket.addEventListener('open', () => {
   });
 
   // This is to allow things to animate
-  const next = requestAnimationFrame;
-  // const next = func => setTimeout(func, 500);
+  // const next = requestAnimationFrame;
+  const next = func => setTimeout(func, 2000);
   const step = () => {
     store.dispatch(actions.time(Date.now()));
     next(step);
