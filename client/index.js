@@ -17,22 +17,15 @@ import actions from './actions/index.mjs';
 import { keyCodes, playerStates, actions as actionTypes } from './utils/constants.mjs';
 import currentPlayerDirection from './subscribers/currentPlayerDirection';
 import currentPlayerStatus from './subscribers/currentPlayerStatus';
-// import configureSocket from './utils/configureSocket';
-// import socketActionMiddleware from './utils/socketActionReporter';
-import { actionTimeStamper } from './utils/middlewares';
 
-// const { hostname } = window.location;
-// const socket = new WebSocket(`ws://${hostname}:8081`);
+import { actionTimeStamper } from './utils/middlewares';
 
 const { player: { up, down, left, right } } = actions;
 const { UP, DOWN, LEFT, RIGHT } = keyCodes;
 
 // eslint-disable-next-line no-underscore-dangle
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
-// const store = createStore(reducer, composeEnhancers(applyMiddleware(socketActionMiddleware(socket))));
 const store = createStore(reducer, composeEnhancers(applyMiddleware(actionTimeStamper)));
-
-// configureSocket(socket, store);
 
 document.addEventListener('keydown', (evt) => {
   const { currentPlayer: name, players } = store.getState();
