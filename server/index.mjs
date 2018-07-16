@@ -2,6 +2,7 @@
 import express from 'express';
 import http from 'http';
 import WebSocket from 'ws';
+import { socketCommands } from '../client/utils/constants.mjs';
 
 // Socket server //////////////
 const socketPort = process.env.SOCKET_PORT || 8081;
@@ -10,7 +11,11 @@ const server = new WebSocket.Server({ port: socketPort });
 console.info(`Socket server listening on port ${socketPort}...`);
 server.on('connection', (socket) => {
   console.log('socket attached.');
-  socket.on('message', console.log);
+  socket.on('message', (message) => {
+    const { data: action } = JSON.parse(message);
+    action.timestamp = Date.now();
+    socket.send(JSON.stringify({ type: socketCommands.ACTION, data: action }));
+  });
 });
 
 
