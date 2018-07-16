@@ -30,3 +30,9 @@ export const playerStates = {
   PLAYING: 'PLAYING',
   CRASHED: 'CRASHED',
 };
+
+export const socketCommands = {
+  INIT: 'INERT',
+  ACTION: 'ACTJION',
+  CLOSE: 'CLOTHES',
+};

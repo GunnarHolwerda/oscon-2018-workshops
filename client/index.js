@@ -23,6 +23,12 @@ import { actionTimeStamper } from './utils/middlewares';
 const { player: { up, down, left, right } } = actions;
 const { UP, DOWN, LEFT, RIGHT } = keyCodes;
 
+const { hostname } = window.location;
+const socket = new WebSocket(`ws://${hostname}:8081`);
+socket.addEventListener('open', () => {
+  socket.send('Oh HAY');
+});
+
 // eslint-disable-next-line no-underscore-dangle
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const store = createStore(reducer, composeEnhancers(applyMiddleware(actionTimeStamper)));
