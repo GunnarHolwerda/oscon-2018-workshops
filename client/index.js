@@ -31,6 +31,11 @@ const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const store = createStore(reducer, composeEnhancers(applyMiddleware(socketActionReporter(socket))));
 
 // configureSocket(socket, store);
+socket.addEventListener('message', (event) => {
+  const { data } = JSON.parse(event.data);
+  data.incoming = true;
+  store.dispatch(data);
+});
 
 document.addEventListener('keydown', (evt) => {
   const { currentPlayer: name, players } = store.getState();
