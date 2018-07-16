@@ -18,19 +18,17 @@ import { keyCodes, playerStates, actions as actionTypes } from './utils/constant
 import currentPlayerDirection from './subscribers/currentPlayerDirection';
 import currentPlayerStatus from './subscribers/currentPlayerStatus';
 // import configureSocket from './utils/configureSocket';
-// import socketActionMiddleware from './utils/socketActionReporter';
-import { actionTimeStamper } from './utils/middlewares';
+import { socketActionReporter } from './utils/middlewares';
 
-// const { hostname } = window.location;
-// const socket = new WebSocket(`ws://${hostname}:8081`);
+const { hostname } = window.location;
+const socket = new WebSocket(`ws://${hostname}:8081`);
 
 const { player: { up, down, left, right } } = actions;
 const { UP, DOWN, LEFT, RIGHT } = keyCodes;
 
 // eslint-disable-next-line no-underscore-dangle
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
-// const store = createStore(reducer, composeEnhancers(applyMiddleware(socketActionMiddleware(socket))));
-const store = createStore(reducer, composeEnhancers(applyMiddleware(actionTimeStamper)));
+const store = createStore(reducer, composeEnhancers(applyMiddleware(socketActionReporter(socket))));
 
 // configureSocket(socket, store);
 
@@ -51,30 +49,32 @@ document.addEventListener('keydown', (evt) => {
   if (prevent) evt.preventDefault();
 });
 
-store.dispatch(actions.board.load([
-  [[0, 0], [500, 0], [500, 500], [0, 500], [0, 0]],
-  [[150, 150], [350, 350]],
-]));
+socket.addEventListener('open', () => {
+  store.dispatch(actions.board.load([
+    [[0, 0], [500, 0], [500, 500], [0, 500], [0, 0]],
+    [[150, 150], [350, 350]],
+  ]));
 
-// sound effect hooks
-currentPlayerDirection(store);
-currentPlayerStatus(store);
+  // sound effect hooks
+  currentPlayerDirection(store);
+  currentPlayerStatus(store);
 
-// If you want to watch another player, call this function!
-window.watch = name => store.dispatch({
-  type: actionTypes.PLAYER_CURRENT,
-  data: name,
-  incoming: true,
-});
+  // If you want to watch another player, call this function!
+  window.watch = name => store.dispatch({
+    type: actionTypes.PLAYER_CURRENT,
+    data: name,
+    incoming: true,
+  });
 
-// This is to allow things to animate
-const next = requestAnimationFrame;
-// const next = func => setTimeout(func, 500);
-const step = () => {
-  store.dispatch(actions.time(Date.now()));
+  // This is to allow things to animate
+  const next = requestAnimationFrame;
+  // const next = func => setTimeout(func, 500);
+  const step = () => {
+    store.dispatch(actions.time(Date.now()));
+    next(step);
+  };
   next(step);
-};
-next(step);
+});
 
 render(
   <Provider store={store}><App /></Provider>,

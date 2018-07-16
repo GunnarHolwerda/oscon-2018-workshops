@@ -10,17 +10,11 @@ import { socketCommands as commands } from './constants.mjs';
  * @return {Function} A middleware function to use with a Redux store
  */
 export const socketActionReporter = socket => (/* store */) => next => (action) => {
-  // don't cycle incoming actions back - these are from the server
-  if (action.incoming) {
-    return next(action);
-  }
-
-  // outgoing
-  // const timestamp = Date.now() - store.getState().timeOffset;
-  socket.send(JSON.stringify({ type: commands.ACTION, data: action, clientTimestamp: Date.now() }));
+  // Send out all the actions to the server
+  socket.send(JSON.stringify({ type: commands.ACTION, data: action }));
 
   // by default, we don't allow actions to hit the reducer - they need to come from the server
-  return null; // next(action);
+  return next({ ...action, timestamp: Date.now() });
 };
 
 export const actionTimeStamper = (/* store */) => next => action => next({ ...action, timestamp: Date.now() });

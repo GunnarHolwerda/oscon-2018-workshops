@@ -1,7 +1,7 @@
 /* eslint-env: node */
 import express from 'express';
 import http from 'http';
-// import WebSocket from 'ws';
+import WebSocket from 'ws';
 
 // import createStore from './liteStore.mjs';
 // import { newConnection, broadcast } from './sessions.mjs';
@@ -9,7 +9,7 @@ import http from 'http';
 // import actions from '../client/actions/index.mjs';
 
 // Socket server //////////////
-// const socketPort = process.env.SOCKET_PORT || 8081;
+const socketPort = process.env.SOCKET_PORT || 8081;
 // const store = createStore(reducer);
 // store.dispatch(actions.board.load([
 //   [[0, 0], [500, 0], [500, 500], [0, 500], [0, 0]],
@@ -27,9 +27,12 @@ setInterval(() => {
 }, 10);
 */
 
-// const server = new WebSocket.Server({ port: socketPort });
-// console.info(`Socket server listening on port ${socketPort}...`);
-// server.on('connection', newConnection(store));
+const server = new WebSocket.Server({ port: socketPort });
+console.info(`Socket server listening on port ${socketPort}...`);
+server.on('connection', (socket) => {
+  console.log('socket attached.');
+  socket.on('message', console.log);
+});
 
 
 // File server //////////////
