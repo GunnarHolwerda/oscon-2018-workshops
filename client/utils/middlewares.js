@@ -12,6 +12,7 @@ import { socketCommands as commands } from './constants.mjs';
 export const socketActionReporter = socket => (/* store */) => next => (action) => {
   // Only let the ones from the server get dispatched
   if (action.incoming) {
+    console.log('came from server', action);
     return next(action);
   }
   // Send out all the actions to the server
