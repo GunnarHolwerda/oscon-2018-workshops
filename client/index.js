@@ -13,25 +13,26 @@ import { createStore, applyMiddleware, compose } from 'redux';
 
 import App from './components/App';
 import reducer from './reducers/index.mjs';
-import timeReducer from './reducers/time.mjs';
 import actions from './actions/index.mjs';
 import { keyCodes, playerStates, actions as actionTypes } from './utils/constants.mjs';
 import currentPlayerDirection from './subscribers/currentPlayerDirection';
 import currentPlayerStatus from './subscribers/currentPlayerStatus';
-import configureSocket from './utils/configureSocket';
-import socketActionMiddleware from './utils/socketActionReporter';
+// import configureSocket from './utils/configureSocket';
+// import socketActionMiddleware from './utils/socketActionReporter';
+import { actionTimeStamper } from './utils/middlewares';
 
-const { hostname } = window.location;
-const socket = new WebSocket(`ws://${hostname}:8081`);
+// const { hostname } = window.location;
+// const socket = new WebSocket(`ws://${hostname}:8081`);
 
 const { player: { up, down, left, right } } = actions;
 const { UP, DOWN, LEFT, RIGHT } = keyCodes;
 
 // eslint-disable-next-line no-underscore-dangle
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
-const store = createStore(reducer, composeEnhancers(applyMiddleware(socketActionMiddleware(socket))));
+// const store = createStore(reducer, composeEnhancers(applyMiddleware(socketActionMiddleware(socket))));
+const store = createStore(reducer, composeEnhancers(applyMiddleware(actionTimeStamper)));
 
-configureSocket(socket, store);
+// configureSocket(socket, store);
 
 document.addEventListener('keydown', (evt) => {
   const { currentPlayer: name, players } = store.getState();
@@ -50,6 +51,11 @@ document.addEventListener('keydown', (evt) => {
   if (prevent) evt.preventDefault();
 });
 
+store.dispatch(actions.board.load([
+  [[0, 0], [500, 0], [500, 500], [0, 500], [0, 0]],
+  [[150, 150], [350, 350]],
+]));
+
 // sound effect hooks
 currentPlayerDirection(store);
 currentPlayerStatus(store);
@@ -61,50 +67,16 @@ window.watch = name => store.dispatch({
   incoming: true,
 });
 
-/**
- * We created a subStore because we want to have a few things happen:
- *
- * 1) We don't want a TIME actions on every requestAnimationFrame to
- *    Show up in redux dev tools. It make the dev tools unhelpful.
- *
- * 2) We don't want the server to have to broadcast TIME actions,
- *    because it makes for a lot of unessesary network traffic.
- *
- * 3) Every client's requestAnimationFrame happens differently,
- *    and we'd like each client to have control over how many
- *    TIME dispatches they need.
- *
- * 4) The alternative was to have our components be time-aware
- *    and update their props independently based upon the current
- *    time (and on every requestAnimationFrame), thus making them
- *    no longer be connected to react-redux. Yuck!
- */
-const subStore = createStore(timeReducer);
-
-let pauseAmount = 0;
-let pauseTime = null;
+// This is to allow things to animate
+const next = requestAnimationFrame;
+// const next = func => setTimeout(func, 500);
 const step = () => {
-  const timestamp = Date.now();
-  // eslint-disable-next-line no-underscore-dangle
-  if (window.__REDUX_DEVTOOLS_EXTENSION_LOCKED__) {
-    if (pauseTime) pauseAmount = timestamp - pauseTime;
-    else pauseTime = timestamp;
-  } else {
-    subStore.dispatch({
-      type: actionTypes.TIME,
-      state: store.getState(),
-      timestamp,
-      pauseAmount,
-    });
-    const { actionToDispatch } = subStore.getState();
-    if (actionToDispatch) store.dispatch(actionToDispatch);
-    pauseAmount = 0;
-  }
-  requestAnimationFrame(step);
+  store.dispatch(actions.time(Date.now()));
+  next(step);
 };
-requestAnimationFrame(step);
+next(step);
 
 render(
-  <Provider store={{ ...subStore, dispatch: store.dispatch }}><App /></Provider>,
+  <Provider store={store}><App /></Provider>,
   document.getElementById('app-root'),
 );

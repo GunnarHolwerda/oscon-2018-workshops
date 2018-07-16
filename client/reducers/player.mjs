@@ -1,18 +1,24 @@
 import { actions, directions, playerStates } from '../utils/constants.mjs';
 
-const { PLAYER_ADD, PLAYER_START, PLAYER_DIRECTION, PLAYER_CRASH } = actions;
-const { STARTING, PLAYING, CRASHED } = playerStates;
+const { PLAYER_ADD, PLAYER_DIRECTION } = actions;
+const { STARTING, CRASHED } = playerStates;
 
 export const SECOND = 1000;
 export const START_COUNTDOWN = 3 * SECOND;
 export const CRASH_LINGER = 2 * SECOND;
 export const CRASH_DELETE = 15 * SECOND;
 
-const basePlayer = {
+const initializePlayer = (x, y, startTime, color) => ({
+  x,
+  y,
+  color,
+  startTime,
   status: STARTING,
   speed: 50 / SECOND,
   direction: directions.UP,
-};
+  lastDirection: null,
+  path: [],
+});
 
 const colorList = {
   '#ff1744': 0,
@@ -40,72 +46,39 @@ const leastUsedColor = (state) => {
   );
 };
 
-export const movePlayer = (player, timestamp) => {
-  const { status, speed, path, direction, lastUpdate = player.startTime } = player;
-  const lastPoint = path[path.length - 1];
-  if (status !== PLAYING) return lastPoint;
-  const [oldX, oldY] = lastPoint;
-  const [dirX, dirY] = direction;
-  const timeDelta = timestamp - lastUpdate;
-  const x = oldX + (dirX * timeDelta * speed);
-  const y = oldY + (dirY * timeDelta * speed);
-  return [x, y];
-};
-
 export default (player, action, parentState) => {
   const { type, data, timestamp } = action;
   const { status } = player || {};
 
-  const updateAndMove = (patch) => {
-    if (status !== PLAYING) return { ...player, ...patch };
-    const move = movePlayer(player, action.timestamp);
-    const { path: oldPath } = player;
-    const path = [...oldPath, move];
-    return { ...player, ...patch, path, lastUpdate: action.timestamp };
-  };
-
   switch (type) {
     case PLAYER_ADD: {
       const { x, y } = data;
-      const path = [[x, y]];
       // Ignore adding players with a name that already exists on the board
       if (player && status !== CRASHED) return player;
       const color = player ? player.color : leastUsedColor(parentState);
-      return { ...basePlayer, path, color, startTime: timestamp + START_COUNTDOWN };
-    }
-
-    case PLAYER_START: {
-      // Ignore if player isn't in starting state
-      if (status !== STARTING) return player;
-      return { ...player, status: PLAYING, startTime: timestamp, lastUpdate: timestamp };
+      return initializePlayer(x, y, timestamp + START_COUNTDOWN, color);
     }
 
     case PLAYER_DIRECTION: {
-      const { direction: lastDir } = player;
       const direction = data;
+      const { lastDirection, direction: currentDirection } = player;
 
       // If we're crashed, this is a no-op
       if (status === CRASHED) return player;
 
-      // If the direction is the same as before, do nothing
-      if (lastDir === direction) return player;
+      // If the direction is the same as current, do nothing
+      if (currentDirection === direction) return player;
 
       // if we're in a starting state, we can change to any
       // direction, but no moving allowed yet.
       if (status === STARTING) return { ...player, direction };
 
       // If the direction is exactly the opposite of before, do nothing
-      if (lastDir && direction[0] === -lastDir[0] && direction[1] === -lastDir[1]) return player;
+      if (lastDirection && direction[0] === -lastDirection[0] && direction[1] === -lastDirection[1]) return player;
 
       // If the direction provided isn't redundant or conflicting,
       // Time to update the position
-      return updateAndMove({ direction });
-    }
-
-    case PLAYER_CRASH: {
-      // ignore unless the player is currently playing
-      if (status !== PLAYING) return player;
-      return updateAndMove({ status: CRASHED, crashTime: timestamp });
+      return { ...player, direction };
     }
     default: return player;
   }

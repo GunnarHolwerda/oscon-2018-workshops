@@ -7,10 +7,13 @@ const { CRASHED } = playerStates;
 const sessions = {};
 
 export const sendAction = socket => (action) => {
-  socket.send(JSON.stringify({
-    type: commands.ACTION,
-    data: { ...action, timestamp: Date.now() },
-  }));
+  const data = { ...action };
+  data.timestamp = Date.now();
+  console.log(data.clientTimestamp);
+  if (action.owner !== socket.id) {
+    delete data.clientTimestamp;
+  }
+  socket.send(JSON.stringify({ type: commands.ACTION, data }));
 };
 
 export const broadcast = (action) => {
@@ -31,9 +34,13 @@ export const nameAvailable = (name) => {
 export const newConnection = store => (socket) => {
   const id = Date.now();
   sessions[id] = socket;
+  // eslint-disable-next-line no-param-reassign
+  socket.id = id;
   const send = sendAction(socket);
   socket.on('message', (message) => {
-    const { data: action } = JSON.parse(message);
+    const { data: action, clientTimestamp } = JSON.parse(message);
+    action.owner = id;
+    action.clientTimestamp = clientTimestamp;
 
     if (action.type === PLAYER_ADD) {
       // Wait right there... Before we reduce this, we need to

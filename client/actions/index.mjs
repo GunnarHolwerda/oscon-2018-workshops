@@ -1,7 +1,9 @@
 import { actions, directions } from '../utils/constants.mjs';
 import { isClosed } from '../utils/calc.mjs';
 
-const { BOARD_SET, PLAYER_ADD, PLAYER_START, PLAYER_DIRECTION, PLAYER_CURRENT, PLAYER_CRASH, PLAYER_DELETE } = actions;
+const {
+  BOARD_SET, PLAYER_ADD, PLAYER_START, PLAYER_DIRECTION, PLAYER_CURRENT, PLAYER_CRASH, PLAYER_DELETE, TIME,
+} = actions;
 const { UP, DOWN, LEFT, RIGHT } = directions;
 
 const board = {
@@ -44,4 +46,6 @@ const playerActions = {
   delete: data => ({ type: PLAYER_DELETE, data }),
 };
 
-export default { board, player: playerActions };
+const time = data => ({ type: TIME, data });
+
+export default { board, player: playerActions, time };

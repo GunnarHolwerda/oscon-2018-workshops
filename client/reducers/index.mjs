@@ -1,10 +1,11 @@
 import { actions } from '../utils/constants.mjs';
 import playerReducer from './player.mjs';
+import timeReducer from './time.mjs';
 
 export const SECOND = 1000;
 export const START_COUNTDOWN = 3 * SECOND;
 export const CRASH_LINGER = 2 * SECOND;
-const { STATE_SET, BOARD_SET, PLAYER_CURRENT, PLAYER_DELETE } = actions;
+const { STATE_SET, BOARD_SET, PLAYER_CURRENT, PLAYER_DELETE, TIME } = actions;
 
 export const initialState = {
   time: 0,
@@ -56,6 +57,10 @@ export default (state = initialState, action) => {
       const players = { ...state.players };
       delete players[data];
       return { ...state, players };
+    }
+
+    case TIME: {
+      return timeReducer(state, action);
     }
 
     default: {
