@@ -17,7 +17,6 @@ import actions from './actions/index.mjs';
 import { keyCodes, playerStates, actions as actionTypes } from './utils/constants.mjs';
 import currentPlayerDirection from './subscribers/currentPlayerDirection';
 import currentPlayerStatus from './subscribers/currentPlayerStatus';
-// import configureSocket from './utils/configureSocket';
 import { socketActionReporter } from './utils/middlewares';
 
 const { hostname } = window.location;
@@ -29,8 +28,6 @@ const { UP, DOWN, LEFT, RIGHT } = keyCodes;
 // eslint-disable-next-line no-underscore-dangle
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const store = createStore(reducer, composeEnhancers(applyMiddleware(socketActionReporter(socket))));
-
-// configureSocket(socket, store);
 
 document.addEventListener('keydown', (evt) => {
   const { currentPlayer: name, players } = store.getState();
@@ -70,7 +67,7 @@ socket.addEventListener('open', () => {
   const next = requestAnimationFrame;
   // const next = func => setTimeout(func, 500);
   const step = () => {
-    store.dispatch(actions.time(Date.now()));
+    store.dispatch(actions.time());
     next(step);
   };
   next(step);
