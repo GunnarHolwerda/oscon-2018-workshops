@@ -31,12 +31,14 @@ const bobAdd = {
   type: PLAYER_ADD,
   data: { x: 50, y: 50 },
   player: 'bob',
+  timestamp: 0,
 };
 
 const joeAdd = {
   type: PLAYER_ADD,
   data: { x: 100, y: 60 },
   player: 'joe',
+  timestamp: 0,
 };
 
 const bobRight = {
@@ -57,8 +59,8 @@ const joeLeft = {
   player: 'joe',
 };
 
-describe.only('reducers/time', () => {
-  it.only('should not move players before their time', () => {
+describe('reducers/time', () => {
+  it('should not move players before their time', () => {
     const state = reduce(initialState, bobAdd, time(50));
     const { bob } = state.players;
     expect(bob.status).to.equal(STARTING);

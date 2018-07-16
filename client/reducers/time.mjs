@@ -60,7 +60,6 @@ export default (state, action) => {
     switch (status) {
       case STARTING:
         // check if status should still be STARTING
-        console.log({ timestamp, playerStartTime: player.startTime });
         if (timestamp < player.startTime) break;
         player.status = PLAYING;
         player.startTime = timestamp;
