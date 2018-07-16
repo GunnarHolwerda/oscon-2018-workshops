@@ -46,6 +46,12 @@ document.addEventListener('keydown', (evt) => {
   if (prevent) evt.preventDefault();
 });
 
+socket.addEventListener('message', (event) => {
+  const { data: action } = JSON.parse(event.data);
+  action.incoming = true;
+  store.dispatch(action);
+});
+
 socket.addEventListener('open', () => {
   store.dispatch(actions.board.load([
     [[0, 0], [500, 0], [500, 500], [0, 500], [0, 0]],
