@@ -54,11 +54,6 @@ document.addEventListener('keydown', (evt) => {
 });
 
 socket.addEventListener('open', () => {
-  store.dispatch(actions.board.load([
-    [[0, 0], [500, 0], [500, 500], [0, 500], [0, 0]],
-    [[150, 150], [350, 350]],
-  ]));
-
   // sound effect hooks
   currentPlayerDirection(store);
   currentPlayerStatus(store);

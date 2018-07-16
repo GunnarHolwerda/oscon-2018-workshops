@@ -12,6 +12,7 @@ import { socketCommands as commands } from './constants.mjs';
 export const socketActionReporter = socket => (/* store */) => next => (action) => {
   // Dispatch what comes from the server, but don't send it back!
   if (action.incoming) {
+    console.log('incoming action', action);
     return next(action);
   }
 
