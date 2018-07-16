@@ -95,7 +95,11 @@ describe('actions', () => {
       expect(player.left('ian')).to.deep.equal({ type: 'PLAYER_DIRECTION', player: 'ian', data: [-1, 0] });
     });
     it('right()', () => {
-      expect(player.right('ian')).to.deep.equal({ type: 'PLAYER_DIRECTION', data: { name: 'ian', direction: [1, 0] } });
+      expect(player.right('ian')).to.deep.equal({ type: 'PLAYER_DIRECTION', player: 'ian', data: [1, 0] });
+    });
+
+    it('crash()', () => {
+      expect(player.crash('ian')).to.deep.equal({ type: 'PLAYER_CRASH', player: 'ian' });
     });
   });
 

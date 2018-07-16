@@ -17,8 +17,7 @@
     "import/first": [1, { "absolute-first": false }],
     "import/no-named-as-default": 0,
 
-    "mocha/no-exclusive-tests": "warn",
-    "mocha/no-skipped-tests": "warn",
-    "mocha/no-identical-title": "error"
+    "mocha/no-exclusive-tests": "error",
+    "mocha/no-identical-title": "warn"
   }
 }

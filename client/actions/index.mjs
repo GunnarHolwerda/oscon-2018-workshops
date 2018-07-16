@@ -1,7 +1,7 @@
 import { actions, directions } from '../utils/constants.mjs';
 import { isClosed } from '../utils/calc.mjs';
 
-const { BOARD_SET, PLAYER_ADD, PLAYER_DIRECTION, PLAYER_CURRENT, TIME } = actions;
+const { BOARD_SET, PLAYER_ADD, PLAYER_START, PLAYER_DIRECTION, PLAYER_CURRENT, PLAYER_CRASH, PLAYER_DELETE } = actions;
 const { UP, DOWN, LEFT, RIGHT } = directions;
 
 const board = {
@@ -19,7 +19,7 @@ const board = {
   },
 };
 
-const player = {
+const playerActions = {
   add: (name, inputX, inputY) => {
     if (inputX == null) throw new Error(`x is required. Received ${inputX}`);
     if (inputY == null) throw new Error(`y is required. Received ${inputY}`);
@@ -30,19 +30,18 @@ const player = {
     return { type: PLAYER_ADD, data: { x, y }, player: name };
   },
 
+  up: player => ({ type: PLAYER_DIRECTION, data: UP, player }),
+  down: player => ({ type: PLAYER_DIRECTION, data: DOWN, player }),
+  left: player => ({ type: PLAYER_DIRECTION, data: LEFT, player }),
+  right: player => ({ type: PLAYER_DIRECTION, data: RIGHT, player }),
+  crash: player => ({ type: PLAYER_CRASH, player }),
+  start: player => ({ type: PLAYER_START, player }),
+
+  // We DON'T want to use the `player` property on these actions, because
+  // we need this to be ignored by the player reducer, but instead
+  // be handled by the main reducer.
   claim: data => ({ type: PLAYER_CURRENT, data }),
-
-  up: name => ({ type: PLAYER_DIRECTION, data: UP, player: name }),
-  down: name => ({ type: PLAYER_DIRECTION, data: DOWN, player: name }),
-  left: name => ({ type: PLAYER_DIRECTION, data: LEFT, player: name }),
-  right: name => ({ type: PLAYER_DIRECTION, data: RIGHT, player: name }),
+  delete: data => ({ type: PLAYER_DELETE, data }),
 };
 
-const time = (amount) => {
-  const data = Number(amount);
-  if (!Number.isFinite(data)) throw Error(`amount should be a number. Received ${amount}`);
-  if (!data) throw Error(`amount must exist and be non-zero. Received ${amount}`);
-  return { type: TIME, data };
-};
-
-export default { board, player, time };
+export default { board, player: playerActions };

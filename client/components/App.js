@@ -58,7 +58,7 @@ export const select = (state) => {
   } else if (age < 0) {
     zoomFactor = (3000 + age) / 3000;
   } else if (status === 'CRASHED') {
-    zoomFactor = (2000 + crashAge) / 2000;
+    zoomFactor = Math.max((2000 + crashAge) / 2000, 0);
   }
 
   return {

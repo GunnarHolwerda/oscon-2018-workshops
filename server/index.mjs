@@ -16,6 +16,7 @@ store.dispatch(actions.board.load([
   [[150, 150], [350, 350]],
 ]));
 
+/*
 let now = Date.now();
 setInterval(() => {
   const future = Date.now();
@@ -24,6 +25,7 @@ setInterval(() => {
   broadcast(action);
   now = future;
 }, 10);
+*/
 
 const server = new WebSocket.Server({ port: socketPort });
 console.info(`Socket server listening on port ${socketPort}...`);

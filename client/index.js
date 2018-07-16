@@ -13,6 +13,7 @@ import { createStore, applyMiddleware, compose } from 'redux';
 
 import App from './components/App';
 import reducer from './reducers/index.mjs';
+import timeReducer from './reducers/time.mjs';
 import actions from './actions/index.mjs';
 import { keyCodes, playerStates, actions as actionTypes } from './utils/constants.mjs';
 import currentPlayerDirection from './subscribers/currentPlayerDirection';
@@ -30,7 +31,7 @@ const { UP, DOWN, LEFT, RIGHT } = keyCodes;
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const store = createStore(reducer, composeEnhancers(applyMiddleware(socketActionMiddleware(socket))));
 
-const readSocket = configureSocket(socket, store);
+configureSocket(socket, store);
 
 document.addEventListener('keydown', (evt) => {
   const { currentPlayer: name, players } = store.getState();
@@ -53,24 +54,57 @@ document.addEventListener('keydown', (evt) => {
 currentPlayerDirection(store);
 currentPlayerStatus(store);
 
-let last;
-const step = (current) => {
-  if (last) {
-    // play all actions we have recieved from the socket
-    readSocket();
-  }
-  last = current;
-  requestAnimationFrame(step);
-};
-requestAnimationFrame(step);
-
+// If you want to watch another player, call this function!
 window.watch = name => store.dispatch({
   type: actionTypes.PLAYER_CURRENT,
   data: name,
   incoming: true,
 });
 
+/**
+ * We created a subStore because we want to have a few things happen:
+ *
+ * 1) We don't want a TIME actions on every requestAnimationFrame to
+ *    Show up in redux dev tools. It make the dev tools unhelpful.
+ *
+ * 2) We don't want the server to have to broadcast TIME actions,
+ *    because it makes for a lot of unessesary network traffic.
+ *
+ * 3) Every client's requestAnimationFrame happens differently,
+ *    and we'd like each client to have control over how many
+ *    TIME dispatches they need.
+ *
+ * 4) The alternative was to have our components be time-aware
+ *    and update their props independently based upon the current
+ *    time (and on every requestAnimationFrame), thus making them
+ *    no longer be connected to react-redux. Yuck!
+ */
+const subStore = createStore(timeReducer);
+
+let pauseAmount = 0;
+let pauseTime = null;
+const step = () => {
+  const timestamp = Date.now();
+  // eslint-disable-next-line no-underscore-dangle
+  if (window.__REDUX_DEVTOOLS_EXTENSION_LOCKED__) {
+    if (pauseTime) pauseAmount = timestamp - pauseTime;
+    else pauseTime = timestamp;
+  } else {
+    subStore.dispatch({
+      type: actionTypes.TIME,
+      state: store.getState(),
+      timestamp,
+      pauseAmount,
+    });
+    const { actionToDispatch } = subStore.getState();
+    if (actionToDispatch) store.dispatch(actionToDispatch);
+    pauseAmount = 0;
+  }
+  requestAnimationFrame(step);
+};
+requestAnimationFrame(step);
+
 render(
-  <Provider store={store}><App /></Provider>,
+  <Provider store={{ ...subStore, dispatch: store.dispatch }}><App /></Provider>,
   document.getElementById('app-root'),
 );
